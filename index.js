@@ -222,7 +222,7 @@ class NodeSocket extends stream.Duplex {
   }
 }
 
-function connect(...args) {
+function connect (...args) {
   const socket = new NodeSocket();
   socket.connect(...args);
   return socket;
