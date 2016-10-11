@@ -1,0 +1,24 @@
+{
+  "name": "frida-net",
+  "version": "1.0.0",
+  "authors": [
+    "Frida Developers"
+  ],
+  "description": "Node.js compatible “net” module for Frida",
+  "keywords": [
+    "frida"
+  ],
+  "homepage": "http://www.frida.re",
+  "main": "index.js",
+  "license": "LGPL-2.0 WITH WxWindows-exception-3.1",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/frida/frida-net.git"
+  },
+  "bugs": {
+    "url": "http://github.com/frida/frida-net/issues"
+  },
+  "dependencies": {
+    "co": "^4.6.0"
+  }
+}
