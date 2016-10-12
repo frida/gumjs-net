@@ -25,6 +25,7 @@ class NodeSocket extends stream.Duplex {
 
     this._connection = connection;
     this._paused = true;
+    this._noDelay = false;
     this._connectRequest = null;
     this._closeRequest = null;
     this._readRequest = null;
@@ -71,6 +72,9 @@ class NodeSocket extends stream.Duplex {
       this.readyState = 'opening';
 
       const connection = yield Socket.connect(options);
+      if (this._noDelay) {
+        yield connection.setNoDelay(true);
+      }
       this._connection = connection;
       this._connectRequest = null;
 
@@ -139,7 +143,10 @@ class NodeSocket extends stream.Duplex {
   }
 
   setNoDelay (noDelay) {
-    // TODO
+    this._noDelay = noDelay;
+    if (this._connection !== null) {
+      this._connection.setNoDelay(noDelay);
+    }
   }
 
   setTimeout (timeout, callback) {
