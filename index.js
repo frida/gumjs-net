@@ -119,10 +119,7 @@ class NodeSocket extends stream.Duplex {
           }
           this._connection = null;
         }
-      })
-      .then(() => {
-        this.emit('close');
-      })
+      }.bind(this))
       .catch(error => {
         this.emit('error', error);
       });
@@ -199,8 +196,12 @@ class NodeSocket extends stream.Duplex {
       this._connection = null;
       this.destroyed = true;
 
-      this.emit('error', error);
-      this.emit('close', true);
+      if (this._closeRequest === null) {
+        this.emit('error', error);
+        this.emit('close', true);
+      } else {
+        this.emit('close', false);
+      }
       this.push(null);
     });
   }
