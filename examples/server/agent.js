@@ -40,6 +40,13 @@ const filesystem = {
       mtime: now,
       ctime: now,
       birthtime: now,
+      isFile() { return false; },
+      isDirectory() { return true; },
+      isBlockDevice() { return false; },
+      isCharacterDevice() { return false; },
+      isSymbolicLink() { return false; },
+      isFIFO() { return false; },
+      isSocket() { return false; },
     });
   },
 };
