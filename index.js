@@ -7,20 +7,23 @@ const stream = require('stream');
 module.exports = {
   connect: connect,
   createConnection: connect,
+  createServer: createServer,
 };
 
 class NodeSocket extends stream.Duplex {
-  constructor () {
+  constructor (options = {}) {
     super({});
+
+    const {connection = null} = options;
 
     this.connecting = false;
     this.destroyed = false;
     this.bufferSize = 0;
     this.bytesRead = 0;
     this.bytesWritten = 0;
-    this.readyState = 'closed';
+    this.readyState = (connection !== null) ? 'open' : 'closed';
 
-    this._connection = null;
+    this._connection = connection;
     this._paused = true;
     this._connectRequest = null;
     this._closeRequest = null;
@@ -222,8 +225,176 @@ class NodeSocket extends stream.Duplex {
   }
 }
 
+class NodeServer extends EventEmitter {
+  constructor (options) {
+    super();
+
+    this.listening = false;
+    this.connections = 0;
+    this.maxConnections = 0;
+
+    this._listener = null;
+    this._closing = false;
+    this._closed = false;
+    this._listenRequest = null;
+  }
+
+  ref () {
+  }
+
+  unref () {
+  }
+
+  listen(...args) {
+    let options, callback;
+
+    const firstArg = args[0];
+    const firstArgType = typeof firstArg;
+    if (firstArgType === 'string') {
+      const [path, backlog = 511, cb = null] = args;
+      if (cb !== null) {
+        cb(new Error('Not yet supported'));
+      }
+      return;
+    } else if (firstArgType === 'object') {
+      if ('_handle' in firstArg || 'fd' in firstArg) {
+        const [handle, backlog = 511, cb = null] = args;
+        if (cb !== null) {
+          cb(new Error('Not yet supported'));
+        }
+        return;
+      } else {
+        [options, callback = null] = args;
+      }
+    } else {
+      const [port = 0, host = undefined, backlog = 511, cb = null] = args;
+      options = {
+        host: host,
+        port: port,
+        backlog: backlog,
+      };
+      callback = cb;
+    }
+
+    if (callback !== null) {
+      this.once('listening', callback);
+    }
+
+    const start = () => {
+      this._listenRequest = Socket.listen(options)
+      .then(listener => {
+        this._listener = listener;
+        this._listenRequest = null;
+        this.listening = true;
+        this.emit('listening');
+
+        return co(function* () {
+          while (true) {
+            const client = yield listener.accept();
+            const socket = new NodeSocket({
+              connection: client
+            });
+            this.connections++;
+            socket.once('end', _ => {
+              if (--this.connections === 0 && this._closing) {
+                this.emit('close');
+              }
+            });
+            this.emit('connection', socket);
+          }
+        }.bind(this));
+      })
+      .catch(error => {
+        this._listener = null;
+        this._listenRequest = null;
+        const wasListening = this.listening;
+        this.listening = false;
+
+        this.emit('error', error);
+        if (wasListening && this.connections === 0 && this._closing) {
+          this.emit('close');
+        }
+      });
+    }
+
+    if (this._listenRequest !== null) {
+      this._listenRequest.then(start, start);
+    } else if (this._listener !== null) {
+      this._listener.close().then(start, start);
+    } else {
+      start();
+    }
+  }
+
+  close (callback = null) {
+    if (this._closed) {
+      if (callback !== null) {
+        callback(new Error('Already closed'));
+      }
+      return;
+    }
+
+    if (callback !== null) {
+      this.once('close', callback);
+    }
+
+    this._closing = true;
+
+    co(function* () {
+      if (this._listenRequest !== null) {
+        try {
+          yield this._listenRequest;
+        } catch (e) {
+        }
+      }
+
+      if (this._listener !== null) {
+        try {
+          yield this._listener.close();
+        } finally {
+          this._listener = null;
+        }
+      }
+    });
+  }
+
+  address () {
+    if (this._listener === null) {
+      return null;
+    }
+
+    return {
+      port: this._listener.port,
+      family: 'IPv4',
+      address: '0.0.0.0',
+    };
+  }
+
+  getConnections(callback) {
+    callback(null, this.connections);
+  }
+}
+
 function connect (...args) {
   const socket = new NodeSocket();
   socket.connect(...args);
   return socket;
+}
+
+function createServer (...args) {
+  let options, connectionListener;
+
+  const firstArgType = typeof args[0];
+  if (firstArgType === 'function') {
+    options = {};
+    connectionListener = args[0];
+  } else {
+    [options = {}, connectionListener = null] = args;
+  }
+
+  const server = new NodeServer(options);
+  if (connectionListener !== null) {
+    server.on('connection', connectionListener);
+  }
+  return server;
 }
