@@ -10,6 +10,18 @@
   ],
   "homepage": "http://www.frida.re",
   "main": "index.js",
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
+  },
   "license": "LGPL-2.0 WITH WxWindows-exception-3.1",
   "repository": {
     "type": "git",
