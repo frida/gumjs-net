@@ -30,7 +30,9 @@ class NodeSocket extends stream.Duplex {
     this._readRequest = null;
     this._writeRequest = null;
 
-    this.on('end', this.destroy.bind(this));
+    const destroy = () => this.destroy();
+    this.on('end', destroy);
+    this.on('finish', destroy);
   }
 
   ref () {
