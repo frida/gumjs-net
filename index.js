@@ -63,6 +63,8 @@ class NodeSocket extends stream.Duplex {
       [options, connectListener = null] = args;
     }
 
+    if (typeof options.port === 'string') {
+      options.port = parseInt(options.port);
     }
 
     if (connectListener !== null) {
@@ -280,6 +282,10 @@ class NodeServer extends EventEmitter {
         backlog: backlog,
       };
       callback = cb;
+    }
+
+    if (typeof options.port === 'string') {
+      options.port = parseInt(options.port);
     }
 
     if (callback !== null) {
