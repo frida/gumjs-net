@@ -1,4 +1,4 @@
-# Server example
+# nsq.js client example
 
 Compile with:
 

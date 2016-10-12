@@ -1,4 +1,4 @@
-# Client example
+# FTP server example
 
 Compile with:
 
@@ -7,3 +7,7 @@ Compile with:
 Load into a running process:
 
     frida Twitter -l _agent.js
+
+Connect to it:
+
+    ftp 127.0.0.1 1337

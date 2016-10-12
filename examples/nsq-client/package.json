@@ -1,0 +1,15 @@
+{
+  "name": "nsq-client-example",
+  "version": "1.0.0",
+  "description": "Example showing how to use frida-net's client functionality",
+  "private": true,
+  "scripts": {
+    "prepublish": "npm run build",
+    "build": "frida-compile agent -o _agent.js",
+    "watch": "frida-compile agent -o _agent.js -w"
+  },
+  "devDependencies": {
+    "frida-compile": "^2.0.0",
+    "nsq.js": "^0.14.5"
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "name": "client-example",
+  "name": "ftp-server-example",
   "version": "1.0.0",
-  "description": "Example showing how to use frida-net's client functionality",
+  "description": "Example showing how to use frida-net's server functionality",
   "private": true,
   "scripts": {
     "prepublish": "npm run build",
@@ -10,6 +10,6 @@
   },
   "devDependencies": {
     "frida-compile": "^2.0.0",
-    "irc": "0.3.7"
+    "ftpd": "^0.2.15"
   }
 }

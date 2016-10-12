@@ -1,7 +1,7 @@
 {
-  "name": "server-example",
+  "name": "irc-client-example",
   "version": "1.0.0",
-  "description": "Example showing how to use frida-net's server functionality",
+  "description": "Example showing how to use frida-net's client functionality",
   "private": true,
   "scripts": {
     "prepublish": "npm run build",
@@ -10,6 +10,6 @@
   },
   "devDependencies": {
     "frida-compile": "^2.0.0",
-    "ftpd": "^0.2.15"
+    "irc": "0.3.7"
   }
 }
