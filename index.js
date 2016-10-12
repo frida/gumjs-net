@@ -91,8 +91,7 @@ class NodeSocket extends stream.Duplex {
       this.readyState = 'closed';
 
       this.emit('error', error);
-      this.emit('close', true);
-      this.push(null);
+      this.emit('close');
     });
   }
 
@@ -102,8 +101,17 @@ class NodeSocket extends stream.Duplex {
     }
     this.destroyed = true;
     this.close(_ => {
+      this.readyState = 'closed';
       if (exception !== null) {
         this.emit('error', exception);
+      }
+      this.emit('close');
+
+      this._readRequest = null;
+      if (this._writeRequest !== null) {
+        const [, callback] = this._writeRequest;
+        this._writeRequest = null;
+        callback(new Error('Socket is closed'));
       }
     });
   }
@@ -125,16 +133,11 @@ class NodeSocket extends stream.Duplex {
           }
           this._connection = null;
         }
-      }.bind(this))
-      .catch(error => {
-        this.emit('error', error);
-      });
+      }.bind(this));
     }
 
     if (callback !== null) {
-      this._closeRequest
-      .then(() => callback())
-      .catch(error => callback(error));
+      this._closeRequest.then(() => callback());
     }
   }
 
@@ -185,8 +188,7 @@ class NodeSocket extends stream.Duplex {
         const size = buffer.byteLength;
 
         if (size === 0) {
-          this.readyState = 'closed';
-          this.emit('close', false);
+          this._connection = null;
           this.push(null);
           return;
         }
@@ -201,17 +203,9 @@ class NodeSocket extends stream.Duplex {
       this._readRequest = null;
     }.bind(this))
     .catch(error => {
-      this._readRequest = null;
-      this._connection = null;
-      this.destroyed = true;
-
-      if (this._closeRequest === null) {
-        this.emit('error', error);
-        this.emit('close', true);
-      } else {
-        this.emit('close', false);
-      }
       this.push(null);
+      const exception = (this._closeRequest === null) ? error : null;
+      this.destroy(exception);
     });
   }
 
