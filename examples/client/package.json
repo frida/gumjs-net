@@ -1,7 +1,7 @@
 {
-  "name": "frida-net-example",
+  "name": "client-example",
   "version": "1.0.0",
-  "description": "Example showing how to use frida-net",
+  "description": "Example showing how to use frida-net's client functionality",
   "private": true,
   "scripts": {
     "prepublish": "npm run build",

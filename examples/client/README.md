@@ -1,4 +1,4 @@
-# Example
+# Client example
 
 Compile with:
 
