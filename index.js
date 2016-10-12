@@ -245,7 +245,7 @@ class NodeServer extends EventEmitter {
   unref () {
   }
 
-  listen(...args) {
+  listen (...args) {
     let options, callback;
 
     const firstArg = args[0];
@@ -370,7 +370,7 @@ class NodeServer extends EventEmitter {
     };
   }
 
-  getConnections(callback) {
+  getConnections (callback) {
     callback(null, this.connections);
   }
 }
