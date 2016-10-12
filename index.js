@@ -351,9 +351,9 @@ class NodeServer extends EventEmitter {
       if (this._listener !== null) {
         try {
           yield this._listener.close();
-        } finally {
-          this._listener = null;
+        } catch (e) {
         }
+        this._listener = null;
       }
     });
   }
