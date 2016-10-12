@@ -60,7 +60,9 @@ class NodeSocket extends stream.Duplex {
       };
       connectListener = listener;
     } else {
-      [options, connectListener] = args;
+      [options, connectListener = null] = args;
+    }
+
     }
 
     if (connectListener !== null) {
