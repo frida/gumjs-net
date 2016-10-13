@@ -22,7 +22,7 @@
       ]
     ]
   },
-  "license": "LGPL-2.0 WITH WxWindows-exception-3.1",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "http://github.com/frida/frida-net.git"
@@ -31,6 +31,6 @@
     "url": "http://github.com/frida/frida-net/issues"
   },
   "dependencies": {
-    "co": "^4.6.0"
+    "ipaddr.js": "^1.2.0"
   }
 }
