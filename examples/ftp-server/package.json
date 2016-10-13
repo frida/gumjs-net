@@ -9,7 +9,7 @@
     "watch": "frida-compile agent -o _agent.js -w"
   },
   "devDependencies": {
-    "frida-compile": "^2.0.0",
+    "frida-compile": "^2.0.6",
     "ftpd": "^0.2.15"
   }
 }
