@@ -937,7 +937,7 @@ function afterConnect(error, handle, req, readable, writable) {
     if (req.localAddress && req.localPort) {
       details = req.localAddress + ':' + req.localPort;
     }
-    var ex = exceptionWithHostPort(status,
+    var ex = exceptionWithHostPort(error,
                                    'connect',
                                    req.address,
                                    req.port,
