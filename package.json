@@ -10,6 +10,10 @@
   ],
   "homepage": "http://www.frida.re",
   "main": "index.js",
+  "files": [
+    "index.js",
+    "lib/adapter.js"
+  ],
   "browserify": {
     "transform": [
       [
