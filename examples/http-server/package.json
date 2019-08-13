@@ -4,15 +4,13 @@
   "description": "Example showing how to use frida-net's server functionality",
   "private": true,
   "scripts": {
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "build": "frida-compile agent -o _agent.js",
     "watch": "frida-compile agent -o _agent.js -w"
   },
   "devDependencies": {
-    "frida-compile": "^2.0.6",
-    "koa": "^1.2.4"
-  },
-  "dependencies": {
-    "koa-router": "^5.4.0"
+    "frida-compile": "^9.0.6",
+    "koa": "^2.7.0",
+    "koa-router": "^7.4.0"
   }
 }

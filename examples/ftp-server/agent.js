@@ -1,4 +1,4 @@
-const ftpd = require('ftpd');
+const ftpd = require('@oleavr/ftpd');
 
 const host = '127.0.0.1';
 const port = 1337;
@@ -16,17 +16,19 @@ const filesystem = {
       };
     }
 
-    const files = Process.enumerateModulesSync().map(m => m.name);
+    const files = Process.enumerateModules().map(m => m.name);
 
-    callback(null, files);
+    process.nextTick(() => {
+      callback(null, files);
+    });
   },
 
   stat(path, callback) {
     const now = new Date();
-    callback(null, {
+    const result = {
       dev: 1,
       ino: 1,
-      mode: 493,
+      mode: 16877,
       nlink: 1,
       uid: 0,
       gid: 0,
@@ -45,6 +47,9 @@ const filesystem = {
       isSymbolicLink() { return false; },
       isFIFO() { return false; },
       isSocket() { return false; },
+    };
+    process.nextTick(() => {
+      callback(null, result);
     });
   },
 };

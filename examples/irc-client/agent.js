@@ -2,7 +2,7 @@ const irc = require('irc');
 
 const server = 'irc.freenode.net';
 const channel = '#frida';
-const nick = 'Inside' + Process.enumerateModulesSync()[0].name;
+const nick = 'Inside' + Process.enumerateModules()[0].name;
 
 const client = new irc.Client(server, nick, {
   channels: [channel],

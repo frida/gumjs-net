@@ -1,40 +1,43 @@
-const app = require('koa')();
-const router = require('koa-router')();
+const Koa = require('koa');
+const Router = require('koa-router');
+
+const app = new Koa();
+const router = new Router();
 
 router
-  .get('/ranges', function *(next) {
-    this.body = Process.enumerateRangesSync({
+  .get('/ranges', (ctx, next) => {
+    ctx.body = Process.enumerateRanges({
       protection: '---',
       coalesce: true
     });
   })
-  .get('/modules', function *(next) {
-    this.body = Process.enumerateModulesSync();
+  .get('/modules', (ctx, next) => {
+    ctx.body = Process.enumerateModules();
   })
-  .get('/modules/:name', function *(next) {
+  .get('/modules/:name', (ctx, next) => {
     try {
-      this.body = Process.getModuleByName(this.params.name);
+      ctx.body = Process.getModuleByName(ctx.params.name);
     } catch (e) {
-      this.status = 404;
-      this.body = e.message;
+      ctx.status = 404;
+      ctx.body = e.message;
     }
   })
-  .get('/modules/:name/exports', function *(next) {
-    this.body = Module.enumerateExportsSync(this.params.name);
+  .get('/modules/:name/exports', (ctx, next) => {
+    ctx.body = Module.enumerateExports(ctx.params.name);
   })
-  .get('/modules/:name/imports', function *(next) {
-    this.body = Module.enumerateImportsSync(this.params.name);
+  .get('/modules/:name/imports', (ctx, next) => {
+    ctx.body = Module.enumerateImports(ctx.params.name);
   })
-  .get('/objc/classes', function *(next) {
+  .get('/objc/classes', (ctx, next) => {
     if (ObjC.available) {
-      this.body = Object.keys(ObjC.classes);
+      ctx.body = Object.keys(ObjC.classes);
     } else {
-      this.status = 404;
-      this.body = 'Objective-C runtime not available in this process';
+      ctx.status = 404;
+      ctx.body = 'Objective-C runtime not available in this process';
     }
   })
-  .get('/threads', function *(next) {
-    this.body = Process.enumerateThreadsSync();
+  .get('/threads', (ctx, next) => {
+    ctx.body = Process.enumerateThreads();
   });
 
 app
