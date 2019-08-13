@@ -23,6 +23,6 @@
     "url": "http://github.com/frida/frida-net/issues"
   },
   "dependencies": {
-    "ipaddr.js": "^1.2.0"
+    "ipaddr.js": "^1.9.1"
   }
 }
