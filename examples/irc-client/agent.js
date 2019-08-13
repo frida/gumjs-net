@@ -1,5 +1,3 @@
-'use strict';
-
 const irc = require('irc');
 
 const server = 'irc.freenode.net';

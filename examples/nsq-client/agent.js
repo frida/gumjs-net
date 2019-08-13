@@ -1,5 +1,3 @@
-'use strict';
-
 const nsq = require('nsq.js');
 
 const writer = nsq.writer(':4150');

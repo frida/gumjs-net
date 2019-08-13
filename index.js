@@ -1,5 +1,3 @@
-'use strict';
-
 const EventEmitter = require('events');
 const stream = require('stream');
 const timers = require('timers');

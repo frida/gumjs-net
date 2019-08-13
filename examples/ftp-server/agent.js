@@ -1,5 +1,3 @@
-'use strict';
-
 const ftpd = require('ftpd');
 
 const host = '127.0.0.1';
