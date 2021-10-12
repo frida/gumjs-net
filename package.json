@@ -17,6 +17,7 @@
     "/index.js",
     "/lib/adapter.js"
   ],
+  "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",

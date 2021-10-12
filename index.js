@@ -1,22 +1,46 @@
-const EventEmitter = require('events');
-const stream = require('stream');
-const timers = require('timers');
-const util = require('util');
-const assert = require('assert');
-const ipaddr = require('ipaddr.js');
-
-const Buffer = require('buffer').Buffer;
-const {
+import {
   TCP,
   Pipe,
   TCPConnectWrap,
   PipeConnectWrap,
   ShutdownWrap,
   WriteWrap
-} = require('./lib/adapter');
+} from './lib/adapter.js';
+
+import assert from 'assert';
+import { Buffer } from 'buffer';
+import EventEmitter from 'events';
+import stream from 'stream';
+import timers from 'timers';
+import util from 'util';
 
 const FridaSocket = global.Socket;
 
+export default {
+  createServer,
+  connect: createConnection,
+  _normalizeArgs: normalizeArgs,
+  Socket,
+  Stream: Socket,
+  Server,
+  isIP,
+  isIPv4,
+  isIPv6,
+  _setSimultaneousAccepts,
+};
+
+export {
+  createServer,
+  createConnection as connect,
+  normalizeArgs as _normalizeArgs,
+  Socket,
+  Socket as Stream,
+  Server,
+  isIP,
+  isIPv4,
+  isIPv6,
+  _setSimultaneousAccepts,
+};
 
 function noop() {}
 
@@ -32,9 +56,9 @@ function isPipeName(s) {
   return typeof s === 'string' && toNumber(s) === false;
 }
 
-exports.createServer = function(options, connectionListener) {
+function createServer(options, connectionListener) {
   return new Server(options, connectionListener);
-};
+}
 
 
 // Target API:
@@ -49,7 +73,7 @@ exports.createServer = function(options, connectionListener) {
 // connect(port, [host], [cb])
 // connect(path, [cb]);
 //
-exports.connect = exports.createConnection = function() {
+function createConnection() {
   var args = new Array(arguments.length);
   for (var i = 0; i < arguments.length; i++)
     args[i] = arguments[i];
@@ -61,7 +85,7 @@ exports.connect = exports.createConnection = function() {
   }
 
   return Socket.prototype.connect.apply(s, args);
-};
+}
 
 // Returns an array [options, cb], where cb can be null.
 // It is the same as the argument of Socket.prototype.connect().
@@ -90,7 +114,6 @@ function normalizeArgs(args) {
     cb = null;
   return [options, cb];
 }
-exports._normalizeArgs = normalizeArgs;
 
 
 // called when creating new Socket, or when re-using a closed Socket
@@ -275,9 +298,6 @@ function writeAfterFIN(chunk, encoding, cb) {
     process.nextTick(cb, er);
   }
 }
-
-exports.Socket = Socket;
-exports.Stream = Socket; // Legacy naming.
 
 Socket.prototype.read = function(n) {
   if (n === 0)
@@ -847,7 +867,7 @@ function lookupAndConnect(self, options) {
   var localAddress = options.localAddress;
   var localPort = options.localPort;
 
-  if (localAddress && !exports.isIP(localAddress))
+  if (localAddress && !isIP(localAddress))
     throw new TypeError('"localAddress" option must be a valid IP: ' +
                         localAddress);
 
@@ -866,7 +886,7 @@ function lookupAndConnect(self, options) {
   if (options.lookup)
     throw new TypeError('"lookup" option is not yet supported');
 
-  var addressType = exports.isIP(host);
+  var addressType = isIP(host);
   if (addressType === 0)
     addressType = 4;
 
@@ -994,7 +1014,6 @@ function Server(options, connectionListener) {
   this.pauseOnConnect = !!options.pauseOnConnect;
 }
 util.inherits(Server, EventEmitter);
-exports.Server = Server;
 
 
 function toNumber(x) { return (x = Number(x)) >= 0 ? x : false; }
@@ -1298,27 +1317,40 @@ Server.prototype.unref = function() {
 };
 
 
-exports.isIP = function(input) {
-  try {
-    const address = ipaddr.parse(input);
-    return (address.kind === 'ipv6') ? 6 : 4;
-  } catch (e) {
-    return 0;
-  }
-};
+// IPv4 Segment
+const v4Seg = '(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])';
+const v4Str = `(${v4Seg}[.]){3}${v4Seg}`;
+const IPv4Reg = new RegExp(`^${v4Str}$`);
 
+// IPv6 Segment
+const v6Seg = '(?:[0-9a-fA-F]{1,4})';
+const IPv6Reg = new RegExp('^(' +
+  `(?:${v6Seg}:){7}(?:${v6Seg}|:)|` +
+  `(?:${v6Seg}:){6}(?:${v4Str}|:${v6Seg}|:)|` +
+  `(?:${v6Seg}:){5}(?::${v4Str}|(:${v6Seg}){1,2}|:)|` +
+  `(?:${v6Seg}:){4}(?:(:${v6Seg}){0,1}:${v4Str}|(:${v6Seg}){1,3}|:)|` +
+  `(?:${v6Seg}:){3}(?:(:${v6Seg}){0,2}:${v4Str}|(:${v6Seg}){1,4}|:)|` +
+  `(?:${v6Seg}:){2}(?:(:${v6Seg}){0,3}:${v4Str}|(:${v6Seg}){1,5}|:)|` +
+  `(?:${v6Seg}:){1}(?:(:${v6Seg}){0,4}:${v4Str}|(:${v6Seg}){1,6}|:)|` +
+  `(?::((?::${v6Seg}){0,5}:${v4Str}|(?::${v6Seg}){1,7}|:))` +
+')(%[0-9a-zA-Z-.:]{1,})?$');
 
-exports.isIPv4 = function(input) {
-  return exports.isIP() === 4;
+function isIPv4(s) {
+  return IPv4Reg.test(s);
+}
+
+function isIPv6(s) {
+  return IPv6Reg.test(s);
+}
+
+function isIP(s) {
+  if (isIPv4(s)) return 4;
+  if (isIPv6(s)) return 6;
+  return 0;
 }
 
 
-exports.isIPv6 = function(input) {
-  return exports.isIP() === 6;
-}
-
-
-exports._setSimultaneousAccepts = function(handle) {};
+function _setSimultaneousAccepts(handle) {}
 
 
 // Check that the port number is not NaN when coerced to a number,
