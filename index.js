@@ -861,7 +861,6 @@ Socket.prototype.connect = function(options, cb) {
 
 
 function lookupAndConnect(self, options) {
-  const dns = require('dns');
   var host = options.host || 'localhost';
   var port = options.port;
   var localAddress = options.localAddress;
@@ -1123,13 +1122,8 @@ Server.prototype.listen = function() {
       // Undefined is interpreted as zero (random port) for consistency
       // with net.connect().
       assertPort(options.port);
-      if (options.host) {
-        lookupAndListen(this, options.port | 0, options.host, backlog,
-                        options.exclusive);
-      } else {
-        listen(this, null, options.port | 0, 4, backlog, undefined,
-               options.exclusive);
-      }
+      listen(this, options.host ?? null, options.port ?? 0, 4, backlog,
+             undefined, options.exclusive);
     } else if (options.path && isPipeName(options.path)) {
       // UNIX socket or Windows pipe.
       const pipeName = this._pipeName = options.path;
@@ -1141,17 +1135,6 @@ Server.prototype.listen = function() {
 
   return this;
 };
-
-function lookupAndListen(self, port, address, backlog, exclusive) {
-  require('dns').lookup(address, function(err, ip, addressType) {
-    if (err) {
-      self.emit('error', err);
-    } else {
-      addressType = ip ? addressType : 4;
-      listen(self, ip, port, addressType, backlog, undefined, exclusive);
-    }
-  });
-}
 
 Object.defineProperty(Server.prototype, 'listening', {
   get: function() {
