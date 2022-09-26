@@ -10,6 +10,7 @@ import {
 import assert from 'assert';
 import { Buffer } from 'buffer';
 import EventEmitter from 'events';
+import process from 'process';
 import stream from 'stream';
 import timers from 'timers';
 import util from 'util';
