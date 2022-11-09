@@ -19,6 +19,7 @@ const FridaSocket = global.Socket;
 
 export default {
   createServer,
+  createConnection,
   connect: createConnection,
   _normalizeArgs: normalizeArgs,
   Socket,
@@ -32,6 +33,7 @@ export default {
 
 export {
   createServer,
+  createConnection,
   createConnection as connect,
   normalizeArgs as _normalizeArgs,
   Socket,
