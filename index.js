@@ -15,7 +15,7 @@ import stream from 'stream';
 import timers from 'timers';
 import util from 'util';
 
-const FridaSocket = global.Socket;
+const FridaSocket = globalThis.Socket;
 
 export default {
   createServer,
