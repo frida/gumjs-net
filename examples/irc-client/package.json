@@ -5,11 +5,11 @@
   "private": true,
   "scripts": {
     "prepare": "npm run build",
-    "build": "frida-compile agent -o _agent.js",
-    "watch": "frida-compile agent -o _agent.js -w"
+    "build": "frida-compile agent.js -o _agent.js",
+    "watch": "frida-compile agent.js -o _agent.js -w"
   },
   "devDependencies": {
-    "frida-compile": "^9.0.6",
+    "frida-compile": "^19.1.0",
     "irc": "^0.5.2"
   }
 }
