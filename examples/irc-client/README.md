@@ -8,7 +8,7 @@ Load into a running process on a virtual machine (do not run this on your host):
 
     frida Twitter -l _agent.js
 
-Join #frida on irc.freenode.net and talk to it:
+Join #frida on irc.libera.chat and talk to it:
 
     <oleavr> InsideTwitter: Process.arch
     <InsideTwitter> oleavr: "x64"

@@ -1,6 +1,6 @@
 const irc = require('irc');
 
-const server = 'irc.freenode.net';
+const server = 'irc.libera.chat';
 const channel = '#frida';
 const nick = 'Inside' + Process.enumerateModules()[0].name;
 
@@ -22,7 +22,7 @@ client.on('message' + channel, (from, message) => {
   let result;
   try {
     const rawResult = (1, eval)(code);
-    global._ = rawResult;
+    globalThis._ = rawResult;
     result = JSON.stringify(rawResult);
   } catch (e) {
     result = 'throw new ' + e.name + '("' + e.message + '")';
